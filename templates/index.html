@@ -1,0 +1,57 @@
+
+<!doctype html><html><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WellAtlas by Henry Suden</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+</head><body>
+  <div class="header-top"><h1 id="appTitle">WellAtlas by Henry Suden</h1></div>
+  <div class="header-sub input-row">
+    <a class="btn blue" href="{{ url_for('customers_index') }}">Customers</a>
+    <a class="btn green" href="{{ url_for('sites_index') }}">Sites</a>
+    <a class="btn amber" href="{{ url_for('jobs_index') }}">Job #</a>
+    <input id="searchInput" type="text" placeholder="Search customers, sites, jobs, descriptions, notes">
+    <select id="jobFilter"><option value="">All Jobs</option><option>Domestic</option><option>Drilling</option><option>Ag</option><option>Electrical</option></select>
+    <select id="customerFilter"><option value="">All Customers</option></select>
+    <button class="btn blue" id="goBtn" type="button">Search</button>
+    <button class="btn gray" id="locateBtn" type="button">📍 Center on Me</button>
+  </div>
+  <main><div id="map"></div></main>
+<script>
+const mtKey = "{{ maptiler_key }}";
+const streets = L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${mtKey}`);
+const hybrid  = L.tileLayer(`https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${mtKey}`);
+const satellite = L.tileLayer(`https://api.maptiler.com/tiles/satellite-v2/{z}/{x}/{y}.jpg?key=${mtKey}`);
+const map = L.map('map', { center:[39.9,-122.0], zoom:9, layers:[hybrid] });
+L.control.layers({ "Hybrid":hybrid, "Streets":streets, "Satellite":satellite }).addTo(map);
+let markersLayer = L.layerGroup().addTo(map), markers=[];
+function addMarker(site){
+  if(site.latitude==null || site.longitude==null) return;
+  const m = L.marker([site.latitude, site.longitude]).bindPopup(`<strong>${site.customer} — ${site.name}</strong><br>(${site.latitude.toFixed(5)}, ${site.longitude.toFixed(5)})<br><a href="/site/${site.id}">Open site</a>`);
+  markersLayer.addLayer(m); markers.push(m);
+}
+async function loadCustomers(){
+  const r = await fetch('/api/customers'); const data = await r.json();
+  document.getElementById('customerFilter').innerHTML = '<option value="">All Customers</option>' + data.map(c=>`<option>${c.name}</option>`).join('');
+}
+async function refresh(){
+  markersLayer.clearLayers(); markers=[];
+  const q = document.getElementById('searchInput').value||"";
+  const job = document.getElementById('jobFilter').value||"";
+  const cust = document.getElementById('customerFilter').value||"";
+  const r = await fetch(`/api/sites?q=${encodeURIComponent(q)}&job=${encodeURIComponent(job)}&customer=${encodeURIComponent(cust)}`);
+  const data = await r.json(); data.forEach(addMarker);
+  if(markers.length){ const g=L.featureGroup(markers); map.fitBounds(g.getBounds().pad(0.2)); } else { map.setView([39.9,-122.0], 9); }
+}
+document.getElementById('goBtn').addEventListener('click', refresh);
+document.getElementById('jobFilter').addEventListener('change', refresh);
+document.getElementById('customerFilter').addEventListener('change', refresh);
+document.getElementById('searchInput').addEventListener('keyup', e=>{ if(e.key==='Enter') refresh(); });
+document.getElementById('locateBtn').addEventListener('click', ()=>{
+  if(!navigator.geolocation) return alert('Geolocation not supported');
+  navigator.geolocation.getCurrentPosition(pos=>{ map.setView([pos.coords.latitude,pos.coords.longitude],14); }, _=>alert('Location error'));
+});
+loadCustomers().then(refresh);
+</script>
+</body></html>

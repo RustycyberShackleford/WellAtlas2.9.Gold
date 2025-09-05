@@ -1,0 +1,23 @@
+
+<!doctype html><html><head><title>WellAtlas by Henry Suden</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head><body>
+<div class="header-top"><h1 id="appTitle">WellAtlas by Henry Suden</h1></div>
+<main class="wrap"><section class="card">
+  <h2>{{ customer['name'] }}</h2>
+  <p><strong>Address:</strong> {{ customer['address'] or '—' }} | <strong>Phone:</strong> {{ customer['phone'] or '—' }} | <strong>Email:</strong> {{ customer['email'] or '—' }}</p>
+  <p>{{ customer['notes'] or '' }}</p>
+  <div class="input-row">
+    <button class="btn blue" id="shareBtn" type="button">Create Share Link (Customer)</button>
+    <input id="shareOut" class="mono" style="min-width:420px" placeholder="Share link..." readonly>
+  </div>
+</section>
+<section class="card"><h3>Sites</h3>
+<ul class="list">{% for s in sites %}<li><a href="{{ url_for('site_detail', site_id=s['id']) }}">{{ s['name'] }}</a> <span class="small">({{ '%.5f'|format(s['latitude'] or 0) }}, {{ '%.5f'|format(s['longitude'] or 0) }})</span></li>{% else %}<li>No sites.</li>{% endfor %}</ul>
+</section></main>
+<script>
+document.getElementById('shareBtn').addEventListener('click', async () => {
+  const r = await fetch('{{ url_for("share_create_customer", cid=customer["id"]) }}', {method:"POST"});
+  const j = await r.json();
+  document.getElementById('shareOut').value = j.url || 'Error';
+});
+</script>
+</body></html>

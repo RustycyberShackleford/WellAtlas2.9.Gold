@@ -1,0 +1,6 @@
+
+<!doctype html><html><head><title>WellAtlas by Henry Suden</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head><body>
+<div class="header-top"><h1 id="appTitle">WellAtlas by Henry Suden</h1></div>
+<main class="wrap"><section class="card"><h2>Jobs</h2>
+<ul class="list">{% for j in jobs %}<li><a href="{{ url_for('job_detail', site_id=j['site_id'], job_id=j['id']) }}">#{{ j['job_number'] }} — {{ j['job_category'] }}</a> <span class="small">{{ j['description'][:100] }}...</span></li>{% else %}<li>No jobs.</li>{% endfor %}</ul>
+</section></main></body></html>

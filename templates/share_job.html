@@ -1,0 +1,22 @@
+
+<!doctype html><html><head><title>Shared Job — WellAtlas</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head><body>
+<div class="header-top"><h1 id="appTitle">WellAtlas by Henry Suden</h1></div>
+<main class="wrap"><section class="card">
+  <h2>Shared Job #{{ job['job_number'] }}</h2>
+  <p><strong>Customer:</strong> {{ customer_name }} | <strong>Site:</strong> {{ site_name }}</p>
+  <div class="kv">
+    <div><strong>Category</strong></div><div><span class="badge">{{ job['job_category'] }}</span></div>
+    <div><strong>Status</strong></div><div>{{ job['status'] or 'Scheduled' }}</div>
+    <div><strong>Depth (ft)</strong></div><div>{{ job['depth_ft'] or '—' }}</div>
+    <div><strong>Casing (in)</strong></div><div>{{ job['casing_diameter_in'] or '—' }}</div>
+    <div><strong>Pump (HP)</strong></div><div>{{ job['pump_hp'] or '—' }}</div>
+    <div><strong>Flow (GPM)</strong></div><div>{{ job['flow_rate_gpm'] or '—' }}</div>
+    <div><strong>Static Level (ft)</strong></div><div>{{ job['static_level_ft'] or '—' }}</div>
+    <div><strong>Drawdown (ft)</strong></div><div>{{ job['drawdown_ft'] or '—' }}</div>
+    <div><strong>Install Date</strong></div><div>{{ job['install_date'] or '—' }}</div>
+  </div>
+  <h3>Description</h3>
+  <p>{{ job['description'] }}</p>
+  <h3>Notes</h3>
+  <ul class="list">{% for n in notes %}<li><strong>{{ n['created_at'][:10] }}</strong> — {{ n['body'] }}</li>{% else %}<li>No notes yet.</li>{% endfor %}</ul>
+</section></main></body></html>

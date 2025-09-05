@@ -1,0 +1,33 @@
+
+<!doctype html><html><head><title>WellAtlas by Henry Suden</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head><body>
+<div class="header-top"><h1 id="appTitle">WellAtlas by Henry Suden</h1></div>
+<main class="wrap"><section class="card">
+  <h2>{{ site['customer'] }} — {{ site['name'] }} — Job #{{ job['job_number'] }}</h2>
+  <div class="input-row" style="margin-bottom:8px">
+    <button class="btn amber" id="shareJobBtn" type="button">Create Share Link (This Job)</button>
+    <input id="shareJobOut" class="mono" style="min-width:420px" placeholder="Share link..." readonly>
+  </div>
+  <div class="kv">
+    <div><strong>Category</strong></div><div><span class="badge">{{ job['job_category'] }}</span></div>
+    <div><strong>Status</strong></div><div>{{ job['status'] or 'Scheduled' }}</div>
+    <div><strong>Depth (ft)</strong></div><div>{{ job['depth_ft'] or '—' }}</div>
+    <div><strong>Casing (in)</strong></div><div>{{ job['casing_diameter_in'] or '—' }}</div>
+    <div><strong>Pump (HP)</strong></div><div>{{ job['pump_hp'] or '—' }}</div>
+    <div><strong>Flow (GPM)</strong></div><div>{{ job['flow_rate_gpm'] or '—' }}</div>
+    <div><strong>Static Level (ft)</strong></div><div>{{ job['static_level_ft'] or '—' }}</div>
+    <div><strong>Drawdown (ft)</strong></div><div>{{ job['drawdown_ft'] or '—' }}</div>
+    <div><strong>Install Date</strong></div><div>{{ job['install_date'] or '—' }}</div>
+  </div>
+  <h3>Description</h3>
+  <p>{{ job['description'] }}</p>
+  <h3>Notes</h3>
+  <ul class="list">{% for n in notes %}<li><strong>{{ n['created_at'][:10] }}</strong> — {{ n['body'] }}</li>{% else %}<li>No notes yet.</li>{% endfor %}</ul>
+</section></main>
+<script>
+document.getElementById('shareJobBtn').addEventListener('click', async () => {
+  const r = await fetch('{{ url_for("share_create_job", job_id=job["id"]) }}', {method:"POST"});
+  const j = await r.json();
+  document.getElementById('shareJobOut').value = j.url || 'Error';
+});
+</script>
+</body></html>
