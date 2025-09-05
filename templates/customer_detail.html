@@ -1,0 +1,20 @@
+<!doctype html><html><head><title>WellAtlas by Henry Suden</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head>
+<body><div class="header-top"><h1 id="appTitle">WellAtlas by Henry Suden</h1></div>
+<div class="header-sub">
+  <a class="btn blue" href="{{ url_for('index') }}">Map</a>
+  <button class="btn blue" id="shareCustBtn" type="button">Create Share Link</button>
+  <input id="shareCustOut" placeholder="Share link..." readonly>
+</div>
+<main class="wrap">
+<section class="card"><h2>{{ customer['name'] }}</h2>
+<p><strong>Address:</strong> {{ customer['address'] or '—' }} | <strong>Phone:</strong> {{ customer['phone'] or '—' }} | <strong>Email:</strong> {{ customer['email'] or '—' }}</p>
+<p>{{ customer['notes'] or '' }}</p></section>
+<section class="card"><h3>Sites</h3><ul class="list">{% for s in sites %}<li><a href="{{ url_for('site_detail', site_id=s['id']) }}">{{ s['name'] }}</a></li>{% else %}<li>No sites.</li>{% endfor %}</ul></section>
+</main>
+<script>
+document.getElementById('shareCustBtn').addEventListener('click', async () => {
+  const r = await fetch('{{ url_for('share_create_customer', cid=customer['id']) }}', {method:'POST'});
+  const j = await r.json(); document.getElementById('shareCustOut').value = j.link;
+  try { await navigator.clipboard.writeText(j.link); } catch(e){}
+});
+</script></body></html>

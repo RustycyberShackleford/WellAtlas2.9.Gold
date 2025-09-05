@@ -1,0 +1,7 @@
+<!doctype html><html><head><title>Shared Job</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head>
+<body><div class="header-top"><h1 id="appTitle">WellAtlas by Henry Suden</h1></div>
+<main class="wrap">
+<section class="card"><h2>{{ site['customer'] }} — {{ site['name'] }}</h2>
+<h3>Job #{{ job['job_number'] }} <span class="badge">{{ job['job_category'] }}</span></h3>
+<p>{{ job['description'] or '' }}</p></section>
+</main></body></html>

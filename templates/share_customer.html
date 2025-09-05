@@ -1,0 +1,9 @@
+<!doctype html><html><head><title>Shared — {{ customer['name'] }}</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head>
+<body><div class="header-top"><h1 id="appTitle">WellAtlas by Henry Suden</h1></div>
+<main class="wrap">
+<section class="card"><h2>{{ customer['name'] }}</h2>
+<p><strong>Address:</strong> {{ customer['address'] or '—' }} | <strong>Phone:</strong> {{ customer['phone'] or '—' }} | <strong>Email:</strong> {{ customer['email'] or '—' }}</p>
+<p>{{ customer['notes'] or '' }}</p></section>
+<section class="card"><h3>Sites</h3><ul class="list">{% for s in sites %}<li><strong>{{ s['name'] }}</strong> — <a href="{{ url_for('site_detail', site_id=s['id']) }}">Open</a></li>{% else %}<li>No sites.</li>{% endfor %}</ul></section>
+<section class="card"><h3>Jobs</h3><ul class="list">{% for j in jobs %}<li>Job #{{ j['job_number'] }} <span class="badge">{{ j['job_category'] }}</span> — <a href="{{ url_for('job_detail', site_id=j['site_id'], job_id=j['id']) }}">Open</a></li>{% else %}<li>No jobs.</li>{% endfor %}</ul></section>
+</main></body></html>

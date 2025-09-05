@@ -1,0 +1,19 @@
+<!doctype html><html><head><title>WellAtlas by Henry Suden</title><link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"></head>
+<body><div class="header-top"><h1 id="appTitle">WellAtlas by Henry Suden</h1></div>
+<div class="header-sub">
+  <a class="btn blue" href="{{ url_for('site_detail', site_id=site['id']) }}">Back to Site</a>
+  <button class="btn amber" id="shareJobBtn" type="button">Create Share Link (This Job)</button>
+  <input id="shareJobOut" placeholder="Share link..." readonly>
+</div>
+<main class="wrap">
+<section class="card"><h2>{{ site['customer'] }} — {{ site['name'] }}</h2>
+<h3>Job #{{ job['job_number'] }} <span class="badge">{{ job['job_category'] }}</span></h3>
+<p>{{ job['description'] or '' }}</p></section>
+</main>
+<script>
+document.getElementById('shareJobBtn').addEventListener('click', async () => {
+  const resp = await fetch('{{ url_for('share_create_job', job_id=job['id']) }}', {method:'POST'});
+  const data = await resp.json(); const out = document.getElementById('shareJobOut'); out.value = data.link;
+  try { await navigator.clipboard.writeText(data.link); } catch(e){}
+});
+</script></body></html>
