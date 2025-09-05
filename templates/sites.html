@@ -1,1 +1,0 @@
-<!doctype html><html><head><title>WellAtlas by Henry Suden</title></head><body><h2>Sites</h2><ul>{% for s in sites %}<li><a href='{{ url_for("site_detail", site_id=s["id"]) }}'>{{ s['customer'] }} — {{ s['name'] }}</a></li>{% endfor %}</ul></body></html>

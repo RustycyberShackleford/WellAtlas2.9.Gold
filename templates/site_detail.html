@@ -1,1 +1,0 @@
-<!doctype html><html><head><title>WellAtlas by Henry Suden</title></head><body><h2>{{ site['customer'] }} — {{ site['name'] }}</h2><p>{{ site['latitude'] }}, {{ site['longitude'] }}</p><ul>{% for j in jobs %}<li><a href='{{ url_for("job_detail", site_id=site["id"], job_id=j["id"]) }}'>Job #{{ j['job_number'] }} ({{ j['job_category'] }})</a></li>{% endfor %}</ul></body></html>

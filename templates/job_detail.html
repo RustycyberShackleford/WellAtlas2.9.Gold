@@ -1,1 +1,0 @@
-<!doctype html><html><head><title>WellAtlas by Henry Suden</title></head><body><h2>{{ site['customer'] }} — {{ site['name'] }} — Job #{{ job['job_number'] }}</h2><p>Category: {{ job['job_category'] }}</p><ul>{% for n in notes %}<li>{{ n['created_at'] }} — {{ n['body'] }}</li>{% endfor %}</ul></body></html>
