@@ -1,0 +1,7 @@
+
+<!doctype html><html><head><title>Job Detail</title></head><body>
+<h2>{{ site['name'] }} — Job #{{ job['job_number'] }}</h2>
+<p>Category: {{ job['job_category'] }} | Status: {{ job['status'] }}</p>
+<p>Depth: {{ job['depth_ft'] }} ft, Casing: {{ job['casing_diameter_in'] }} in, Pump: {{ job['pump_hp'] }} HP, Flow: {{ job['flow_rate_gpm'] }} GPM</p>
+<h3>Notes</h3><ul>{% for n in notes %}<li>{{ n['created_at'] }} — {{ n['body'] }}</li>{% endfor %}</ul>
+</body></html>
