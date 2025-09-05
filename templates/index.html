@@ -1,0 +1,33 @@
+
+<!doctype html><html><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WellAtlas by Henry Suden</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+</head><body>
+<h1 style="text-align:center;color:white;text-shadow:0 2px 6px rgba(0,0,0,.6)">WellAtlas by Henry Suden</h1>
+<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;background:rgba(255,255,255,.9);padding:10px;border-bottom:1px solid #e5e7eb">
+  <a href="{{ url_for('customers_index') }}">Customers</a>
+  <a href="{{ url_for('sites_index') }}">Sites</a>
+  <a href="{{ url_for('jobs_index') }}">Job #</a>
+  <input id="q" placeholder="Search">
+  <select id="jc"><option value="">All</option><option>Domestic</option><option>Drilling</option><option>Ag</option><option>Electrical</option></select>
+  <select id="cust"><option value="">All Customers</option></select>
+  <button id="go">Search</button>
+</div>
+<div id="map"></div>
+<script>
+const mtKey = "{{ maptiler_key }}";
+const map = L.map('map',{center:[39.9,-122],zoom:9});
+const hybrid=L.tileLayer(`https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${mtKey}`).addTo(map);
+const streets=L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${mtKey}`);
+L.control.layers({"Hybrid":hybrid,"Streets":streets}).addTo(map);
+let layer=L.layerGroup().addTo(map), ms=[];
+function add(s){ if(s.latitude==null||s.longitude==null)return; const m=L.marker([s.latitude,s.longitude]).bindPopup(`<b>${s.customer} — ${s.name}</b><br><a href='/site/${s.id}'>Open site</a>`); layer.addLayer(m); ms.push(m); }
+async function loadC(){ const r=await fetch('/api/customers'); const d=await r.json(); document.getElementById('cust').innerHTML = '<option value="">All Customers</option>'+d.map(c=>`<option>${c.name}</option>`).join(''); }
+async function ref(){ layer.clearLayers(); ms=[]; const q=document.getElementById('q').value||''; const jc=document.getElementById('jc').value||''; const cust=document.getElementById('cust').value||''; const r=await fetch(`/api/sites?q=${encodeURIComponent(q)}&job=${encodeURIComponent(jc)}&customer=${encodeURIComponent(cust)}`); const d=await r.json(); d.forEach(add); if(ms.length){const g=L.featureGroup(ms); map.fitBounds(g.getBounds().pad(.2));}}
+document.getElementById('go').onclick=ref; document.getElementById('jc').onchange=ref; document.getElementById('cust').onchange=ref; document.getElementById('q').addEventListener('keyup',e=>{if(e.key==='Enter')ref();});
+loadC().then(ref);
+</script>
+</body></html>
